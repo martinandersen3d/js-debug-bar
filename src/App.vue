@@ -1,4 +1,5 @@
 <script>
+import Accorion from './components/Accorion.vue';
 // https://medium.com/@gilfink/quick-tip-creating-an-xmlhttprequest-interceptor-1da23cf90b76
 // import MyComponent from '@/components/file.vue'
 // import { MyMixin } from '@/components/file.vue'
@@ -9,13 +10,15 @@
 const FetchInterceptor = require('fetch-interceptor');
 export default {
     name: 'App',
-    // components: {
+    components: {
+    Accorion, },
     //     // MyComponent
     // },
     // mixins: [MyMixin],
     // use camelCase for names in props, use kebab-case for html-attributes
     // props: {},
     mounted() {
+        let that = this
         let n = localStorage.getItem('JSDEBUGBAR.TABINDEX')
         if (n !== undefined && n !== null) {
             this.tabActive = n
@@ -35,6 +38,7 @@ export default {
                 let data = responseClone.json().then(data => {
 
                     console.log('FetchInterceptor: ', data)
+                    that.addData('Fetch: Get', data)
                 })
                 // console.log('NANAN: ', data)
                 return response
@@ -60,6 +64,7 @@ export default {
              let response = JSON.parse(this.response);
             //  console.log('XRX Intercept: ',  response)
              console.log('XRX Intercept: ',  response)
+             that.addData('Fetch: Get', response)
                 // var dataDOMElement = document.createElement('div');
                 // dataDOMElement.id = '__interceptedData';
                 // dataDOMElement.innerText = this.response;
@@ -81,6 +86,16 @@ export default {
     // computed: {},
 
     methods: {
+        addData( title = '', data = {}){
+            var newTitle = (new Date()).toTimeString().substring(0, 8) + ' ' + title;
+            // let timestamp = d.getHours() + ':' +d.getMinutes() + ':'+ d.getSeconds() 
+            this.sourceData.push(
+                {
+                    title:newTitle,
+                    data:data
+                }
+            )   
+        },
         setTab(n) {
             this.tabActive = n
             localStorage.setItem('JSDEBUGBAR.TABINDEX', this.tabActive)
@@ -109,7 +124,7 @@ export default {
     data() {
         return {
             tabActive: 0,
-            test: ""
+            sourceData: []
         };
     },
 }
@@ -130,8 +145,10 @@ export default {
 
         <!-- jsd_tab content -->
         <div v-if="tabActive === 0" id="London" class="jsd_tabcontent">
-            <h3>London</h3>
-            <p>London is the capital city of England.</p>
+            <div v-if='sourceData.length > 0'>
+                  
+                <Accorion v-for="( item, index) in sourceData" :key="index" :title="item.title">{{ JSON.stringify(item.data) }}</Accorion>
+            </div>
         </div>
 
         <div v-if="tabActive === 1" id="Paris" class="jsd_tabcontent">
