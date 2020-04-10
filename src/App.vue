@@ -1,17 +1,24 @@
 <script>
 import Accorion from './components/Accorion.vue';
+import TextRender from './components/TextRender.vue';
 // https://medium.com/@gilfink/quick-tip-creating-an-xmlhttprequest-interceptor-1da23cf90b76
+// vue-json-pretty: https://leezng.github.io/vue-json-pretty/
+
 // import MyComponent from '@/components/file.vue'
 // import { MyMixin } from '@/components/file.vue'
 // import Vue from 'vue'
 // import {eventBus} from '@/main.js'
 // import router from '@/router'
 // import fetchIntercept from 'fetch-intercept';
+import VueJsonPretty from 'vue-json-pretty'
 const FetchInterceptor = require('fetch-interceptor');
 export default {
     name: 'App',
     components: {
-    Accorion, },
+    TextRender,
+        Accorion,
+        VueJsonPretty
+    },
     //     // MyComponent
     // },
     // mixins: [MyMixin],
@@ -50,51 +57,55 @@ export default {
         });
         // HXR --------------------------------------
 
-  (function() {
-    var XHR = XMLHttpRequest.prototype;
-    var send = XHR.send;
-    var open = XHR.open;
-    XHR.open = function(method, url) {
-        this.url = url; // the request url
-        return open.apply(this, arguments);
-    }
-    XHR.send = function() {
-        this.addEventListener('load', function() {
-           // if (this.url.includes('<url-you-want-to-intercept>')) {
-             let response = JSON.parse(this.response);
-            //  console.log('XRX Intercept: ',  response)
-             console.log('XRX Intercept: ',  response)
-             that.addData('Fetch: Get', response)
-                // var dataDOMElement = document.createElement('div');
-                // dataDOMElement.id = '__interceptedData';
-                // dataDOMElement.innerText = this.response;
-                //dataDOMElement.style.height = 0;
-               //dataDOMElement.style.overflow = 'hidden';
-                // document.body.appendChild(dataDOMElement);
-            //}               
-        });
-        return send.apply(this, arguments);
-    };
-  })();
-
-
+        (function () {
+            var XHR = XMLHttpRequest.prototype;
+            var send = XHR.send;
+            var open = XHR.open;
+            XHR.open = function (method, url) {
+                this.url = url; // the request url
+                return open.apply(this, arguments);
+            }
+            XHR.send = function () {
+                this.addEventListener('load', function () {
+                    // if (this.url.includes('<url-you-want-to-intercept>')) {
+                    let response = JSON.parse(this.response);
+                    //  console.log('XRX Intercept: ',  response)
+                    console.log('XRX Intercept: ', response)
+                    that.addData('HXR: Get', response)
+                    // var dataDOMElement = document.createElement('div');
+                    // dataDOMElement.id = '__interceptedData';
+                    // dataDOMElement.innerText = this.response;
+                    //dataDOMElement.style.height = 0;
+                    //dataDOMElement.style.overflow = 'hidden';
+                    // document.body.appendChild(dataDOMElement);
+                    //}               
+                });
+                return send.apply(this, arguments);
+            };
+        })();
 
         // --------------------------------------
 
     },
     // watch: {},
-    // computed: {},
+    computed: {
+        sourceDataComputed(){
+            return this.sourceData.slice().reverse()
+        }
+    },
 
     methods: {
-        addData( title = '', data = {}){
+        vueJsonClick(){
+            
+        },
+        addData(title = '', data = {}) {
             var newTitle = (new Date()).toTimeString().substring(0, 8) + ' ' + title;
             // let timestamp = d.getHours() + ':' +d.getMinutes() + ':'+ d.getSeconds() 
             this.sourceData.push(
-                {
-                    title:newTitle,
-                    data:data
-                }
-            )   
+            {
+                title: newTitle,
+                data: data
+            })
         },
         setTab(n) {
             this.tabActive = n
@@ -102,7 +113,7 @@ export default {
         },
 
         fetchGet() {
-            fetch('https://jsonplaceholder.typicode.com/todos/1')
+            fetch('https://gist.githubusercontent.com/shanselman/5e27afbd5f213974b2fc63b082f2df4c/raw/927620d1ece8512584ea2abd492a8385d8de6f62/profile.json')
                 .then(response => response.json())
                 .then(json => {
                     console.log('Fetch > getDate:', json)
@@ -111,7 +122,7 @@ export default {
 
         hxrGet() {
             let req = new XMLHttpRequest();
-            req.open("GET", 'https://jsonplaceholder.typicode.com/todos/1', true);
+            req.open("GET", 'https://gist.githubusercontent.com/sawgar/2a4884a6f451a9fdffd728759b1e88c4/raw/62ccc36135c33408c37f556b7c951d0a832e10af/gistfile.json', true);
             req.send();
             req.onload = function () {
                 let json = JSON.parse(req.responseText);
@@ -123,7 +134,7 @@ export default {
 
     data() {
         return {
-            tabActive: 0,
+            tabActive: 1,
             sourceData: []
         };
     },
@@ -131,33 +142,41 @@ export default {
 </script>
 
 <template>
-<div class='JSDebugBar '>
+<div class='JSDebugBar jsd_unsetall '>
 
-    <div class='JSTabWrapper'>
+    <div class='JSD_TabWrapper'>
         <button class='JSD_BTN' @click="fetchGet()">Fetch GET</button>
         <button class='JSD_BTN' @click="hxrGet()">Hxr GET</button>
         <!-- jsd_tab links -->
         <div class="jsd_tab">
-            <button class="jsd_tablinks" @click="tabActive=0" :class="tabActive === 0 ? 'jsd_active' :''">London</button>
-            <button class="jsd_tablinks" @click="tabActive=1" :class="tabActive === 1 ? 'jsd_active' :''">Paris</button>
-            <button class="jsd_tablinks" @click="tabActive=2" :class="tabActive === 2 ? 'jsd_active' :''">Tokyo</button>
+            <button class="jsd_tablinks" @click="tabActive=0" :class="tabActive === 0 ? 'jsd_active' :''">RESONSE</button>
+            <button class="jsd_tablinks" @click="tabActive=1" :class="tabActive === 1 ? 'jsd_active' :''">HTML Generator</button>
+            <button class="jsd_tablinks" @click="tabActive=2" :class="tabActive === 2 ? 'jsd_active' :''">Options</button>
         </div>
 
         <!-- jsd_tab content -->
         <div v-if="tabActive === 0" id="London" class="jsd_tabcontent">
             <div v-if='sourceData.length > 0'>
-                  
-                <Accorion v-for="( item, index) in sourceData" :key="index" :title="item.title">{{ JSON.stringify(item.data) }}</Accorion>
+
+                <Accorion v-for="( item, index) in sourceDataComputed" :key="index" :title="item.title">
+                    <vue-json-pretty
+                      :path="'res'"
+                      :data="item.data"
+                      @click="vueJsonClick">
+                    </vue-json-pretty>
+                </Accorion>
             </div>
         </div>
 
         <div v-if="tabActive === 1" id="Paris" class="jsd_tabcontent">
-            <h3>Paris</h3>
-            <p>Paris is the capital of France.</p>
+            <Accorion v-for="( item, index) in sourceDataComputed" :key="index" :title="item.title">
+                <TextRender :itemProp="item"></TextRender>
+            </Accorion>
+            
         </div>
 
         <div v-if="tabActive === 2" id="Tokyo" class="jsd_tabcontent">
-            <h3>Tokyo</h3>
+            <h3>Options</h3>
             <p>Tokyo is the capital of Japan.</p>
         </div>
 
@@ -214,7 +233,7 @@ export default {
 }
 
 .jsd_circle_wrapper {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: -40px;
     margin: auto;
@@ -276,5 +295,17 @@ export default {
 
 .JSD_BTN {
     padding: 20px;
+}
+</style>
+
+<style>
+* .jsd_unsetall {
+    all: unset;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
 }
 </style>
