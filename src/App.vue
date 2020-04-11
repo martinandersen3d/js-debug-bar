@@ -135,7 +135,8 @@ export default {
     data() {
         return {
             tabActive: 1,
-            sourceData: []
+            sourceData: [],
+            textRenderActive: "0"
         };
     },
 }
@@ -169,8 +170,21 @@ export default {
         </div>
 
         <div v-if="tabActive === 1" id="Paris" class="jsd_tabcontent">
+                <select name="selDays"  v-model="textRenderActive"  size="9">
+                <option value="0">profiles[0].time2[0].place = lalitpur</option>
+                <option value="1">'profiles[0].time2[0].place': harisiddhi,</option>
+                <option value="2">"profiles[0].time2[0].place": "harisiddhi"</option>
+                <option value="3">let 'profiles[0].time2' = Sunday</option>
+                <option value="4">"profiles[0].time2" => Sunday</option>
+                <option value="5">profiles[0].time2[0].place</option>
+                <option value="6">profiles[0].time2 Sunday</option>
+                <option value="7">profiles[0].time2 04:00-10:00</option>
+                <option value="8">['profiles']['time2']</option>
+                <option value="9">profiles.time2</option>
+                </select>
             <Accorion v-for="( item, index) in sourceDataComputed" :key="index" :title="item.title">
-                <TextRender :itemProp="item"></TextRender>
+
+                <TextRender :itemProp="item" :active="textRenderActive"></TextRender>
             </Accorion>
             
         </div>

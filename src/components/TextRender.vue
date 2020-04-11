@@ -9,14 +9,14 @@ export default {
    
     // mixins: [MyMixin],
     // use camelCase for names in props, use kebab-case for html-attributes
-    props: ['itemProp'],
+    props: ['itemProp', 'active'],
     // mounted() {},
     // watch: {},
     computed: {
         arrOfKeys() {
             let data = this.itemProp.data;
             let newObj = flatten(data)
-            console.log(newObj)
+            // console.log(newObj)
 
             let temp = newObj
             let strArr = []
@@ -25,6 +25,9 @@ export default {
                 strArr.push( this.textRender(key, value) )
             }
             return strArr
+        }, 
+        state(){
+            return parseInt(this.active)
         }
     },
 
@@ -32,7 +35,7 @@ export default {
         textRender( k , v ){
             if( this.state === 0 ){ return `${k} = ${v}`  }
             if( this.state === 1 ){ return `'${k}': ${v},`  }
-            if( this.state === 2 ){ return `"${k}": "${v}"`  }
+            if( this.state === 2 ){ return `"${k}": "${v}",`  }
             if( this.state === 3 ){ return `let '${k}' = ${v}`  }
             if( this.state === 4 ){ return `"${k}" => ${v}`  }
             if( this.state === 5 ){ return `${k}`  }
@@ -79,7 +82,7 @@ export default {
 
     data() {
         return {
-            state: 9
+            // state: 5
         };
     },
 }
